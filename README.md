@@ -75,7 +75,8 @@ Starting the script manually every time doesn't sound like the greatest idea, so
 you should probably consider something that does it for you. The solution I provide
 is a systemd unit file. Copy it to `/etc/systemd/system/`, then enable it with
 `systemctl enable --now chattering_fix`. Don't forget to change the command inside to
-tell the service what id your keyboard has and where the script is located.
+tell the service what id your keyboard has and where the script is located. The script
+should be executable as well.
 
 ## Future plans
 
