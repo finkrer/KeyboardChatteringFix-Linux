@@ -1,17 +1,18 @@
 import logging
 import os
+from typing import Final
 
 import inquirer
 
-_INPUT_DEVICES_PATH = '/dev/input/by-id'
+INPUT_DEVICES_PATH: Final = '/dev/input/by-id'
 
 
 def retrieve_keyboard_path() -> str:
-    keyboard_devices = list(filter(lambda d: d.endswith('-kbd'), os.listdir(_INPUT_DEVICES_PATH)))
+    keyboard_devices = list(filter(lambda d: d.endswith('-kbd'), os.listdir(INPUT_DEVICES_PATH)))
     n_devices = len(keyboard_devices)
 
     if n_devices == 0:
-        raise ValueError(f"Couldn't find a keyboard in '{_INPUT_DEVICES_PATH}'")
+        raise ValueError(f"Couldn't find a keyboard in '{INPUT_DEVICES_PATH}'")
     if n_devices == 1:
         device = keyboard_devices[0]
         logging.info(f"Retrieved keyboard: {device}")
@@ -31,4 +32,4 @@ def retrieve_keyboard_path() -> str:
 
 
 def _abs_keyboard_path(device: str) -> str:
-    return os.path.join(_INPUT_DEVICES_PATH, device)
+    return os.path.join(INPUT_DEVICES_PATH, device)

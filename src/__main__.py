@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import argparse
 import logging
 import sys
@@ -8,7 +6,7 @@ from contextlib import contextmanager
 import libevdev
 
 from src.filtering import filter_chattering
-from src.keyboard_retrieval import retrieve_keyboard_path
+from src.keyboard_retrieval import retrieve_keyboard_path, INPUT_DEVICES_PATH
 
 
 @contextmanager
@@ -25,8 +23,10 @@ def get_device_handle(device_path: str) -> libevdev.Device:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--path', type=str, default=str())
-    parser.add_argument('-t', '--threshold', type=int, default=30)
+    parser.add_argument('-k', '--keyboard', type=str, default=str(),
+                        help=f"Name of your chattering keyboard device as listed in {INPUT_DEVICES_PATH}. "
+                             f"If left unset, will be attempted to be retrieved automatically.")
+    parser.add_argument('-t', '--threshold', type=int, default=30, help="Filter time threshold in milliseconds.")
     parser.add_argument('-v', '--verbosity', type=int, default=1, choices=[0, 1, 2])
     args = parser.parse_args()
 
