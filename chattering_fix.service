@@ -3,7 +3,7 @@ Description=Keyboard Chattering Fix service
 
 [Service]
 Restart=on-failure
-ExecStart=<path-to-script>
+ExecStart=cd <path-to-repo-root> && sudo <path-to-python-executable> -m src
 
 [Install]
 WantedBy=multi-user.target
