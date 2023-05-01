@@ -3,7 +3,7 @@ Description=Keyboard Chattering Fix service
 
 [Service]
 Restart=on-failure
-ExecStart=/home/finkrer/chattering_fix.py /dev/input/by-id/usb-I_One_Gaming_keyboard-event-kbd 30
+ExecStart=<path-to-script>
 
 [Install]
 WantedBy=multi-user.target
