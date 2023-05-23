@@ -1,6 +1,6 @@
 # __Keyboard Chattering Fix for Linux__
 
-[![GitHub](https://img.shields.io/github/license/w2sv/KeyboardChatteringFix-Linux?)](https://github.com/w2sv/KeyboardChatteringFix-Linux/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/github/license/w2sv/KeyboardChatteringFix-Linux?)](LICENSE)
 
 __A tool for filtering mechanical keyboard chattering on Linux__
 
