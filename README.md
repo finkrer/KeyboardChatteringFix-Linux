@@ -43,12 +43,18 @@ By filtering such anomalies, we can hopefully remove chatter without impeding ac
 
 ## Installation
 
-Clone the repository and install the required dependencies enlisted in `requirements.txt`.
+Download the repository as zip and extract the file. The dependencies are listed in the requirements.txt. You can install it with the command below. 
+
+```shell
+sudo pip3 install -r requirements.txt
+```
 
 ## Usage
 
+cd inside the location of the KeyboardChatteringFix-Linux extracted folder and enter the command below to run.
+
 ```shell
-sudo <path-to-python-executable> -m src
+sudo python3 -m src
 ```
 
 ### Customization Options
