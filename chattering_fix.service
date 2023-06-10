@@ -2,8 +2,9 @@
 Description=Keyboard Chattering Fix service
 
 [Service]
-Restart=on-failure
-ExecStart=cd <path-to-repo-root> && sudo python3 -m src
+ExecStart=cd <path/to/file> && sudo python3 -m src
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
