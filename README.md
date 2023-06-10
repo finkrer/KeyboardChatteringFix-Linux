@@ -43,7 +43,7 @@ By filtering such anomalies, we can hopefully remove chatter without impeding ac
 
 ## Installation
 
-Download the repository as zip and extract the file. The dependencies are listed in the requirements.txt. You can install it with the command below. 
+Download the repository as a zip and extract the file. The dependencies are listed in the requirements.txt. And you can install it with the command below. 
 
 ```shell
 sudo pip3 install -r requirements.txt
