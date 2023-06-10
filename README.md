@@ -51,7 +51,7 @@ sudo pip3 install -r requirements.txt
 
 ## Usage
 
-cd inside the location of the KeyboardChatteringFix-Linux extracted folder and enter the command below to run.
+`cd` inside the location of the KeyboardChatteringFix-Linux-master extracted folder and enter the command below to run.
 
 ```shell
 sudo python3 -m src
@@ -74,8 +74,28 @@ sudo python3 -m src
 ## Automation
 
 Starting the script manually every time doesn't sound like the greatest idea, so
-you should probably consider something that does it for you. The solution I provide
-is a systemd unit file, `chattering_fix.service`. Copy it to `/etc/systemd/system/`, then enable it with
-`systemctl enable --now chattering_fix`. Don't forget to change the command inside `ExecStart` to
-tell the service what id your keyboard has and where the script is located. The script
-should be executable as well.
+you should probably consider something that does it for you. Modify the `chattering_fix.sh` to `cd` into the absolute path of the downloaded folder and input the keyboard id and the desired threshold. For example:
+```shell
+cd /home/foouser/Downloads/KeyboardChatteringFix-Linux-master/ && sudo python3 -m src -k usb-SINO_WEALTH_USB_KEYBOARD-event-kbd -t 50
+```
+Also, make sure to change the file permission of `chattering_fix.sh` so that it is executable.
+```shell
+chmod +x chattering_fix.sh
+```
+The `chattering_fix.service` file should also be edited. The `ExecStart` should be the absolute path of the `chattering_fix.sh`. For example:
+```shell
+ExecStart=/home/foouser/Downloads/KeyboardChatteringFix-Linux-master/chattering_fix.sh
+```
+Then, copy the `chattering_fix.service` to `/etc/systemd/system/` and enable it with the command below.
+```shell
+systemctl enable --now chattering_fix
+```
+You can check if the systemd unit file is properly working using 
+```shell
+systemctl status chattering_fix.service
+```
+You can also use 
+```shell
+journalctl -xeu chattering_fix.service
+```
+just to make sure that there are no errors.

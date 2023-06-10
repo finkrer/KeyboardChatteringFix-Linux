@@ -2,7 +2,9 @@
 Description=Keyboard Chattering Fix service
 
 [Service]
-ExecStart=cd <path/to/file> && sudo python3 -m src
+# Change ExecStart to the absolute path of the file, executing chattering_fix.sh
+ExecStart=<absolute/path/to/file/chattering_fix.sh>
+
 Restart=always
 RestartSec=5
 
