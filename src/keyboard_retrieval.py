@@ -17,15 +17,16 @@ def retrieve_keyboard_name() -> str:
     if n_devices == 1:
         logging.info(f"Found keyboard: {keyboard_devices[0]}")
         return keyboard_devices[0]
-    return inquirer.prompt(
+    keyboard_value = list(inquirer.prompt(
         questions=[
             inquirer.List(
                 '_',
                 message='Select a device',
                 choices=keyboard_devices,
-            ),
+            )
         ]
-    ).values()[0]
+    ).values())
+    return keyboard_value[0]
 
 
 def abs_keyboard_path(device: str) -> str:
