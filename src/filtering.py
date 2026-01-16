@@ -1,8 +1,34 @@
 import logging
 from collections import defaultdict
-from typing import DefaultDict, Dict, NoReturn
+from typing import DefaultDict, Dict, NoReturn, Set
 
 import libevdev
+
+from src.constants import FILTERED_KEYS
+
+
+def _get_filtered_keys_set() -> Set[libevdev.EventCode]:
+    """
+    Converts the list of key names to libevdev codes.
+    If FILTERED_KEYS is None or empty, returns None (filter all keys).
+    """
+    if not FILTERED_KEYS:
+        return None
+
+    filtered_codes = set()
+    for key_name in FILTERED_KEYS:
+        try:
+            # Converts "KEY_A" to libevdev.EV_KEY.KEY_A
+            key_code = getattr(libevdev.EV_KEY, key_name)
+            filtered_codes.add(key_code)
+        except AttributeError:
+            logging.warning(f"Key name '{key_name}' not found in libevdev.EV_KEY. Skipping...")
+
+    return filtered_codes
+
+
+# Converts the key list once at initialization
+_FILTERED_KEYS_CODES = _get_filtered_keys_set()
 
 
 def filter_chattering(evdev: libevdev.Device, threshold: int) -> NoReturn:
@@ -10,6 +36,15 @@ def filter_chattering(evdev: libevdev.Device, threshold: int) -> NoReturn:
     evdev.grab()
     # create a copy of the device that we can write to - this will emit the filtered events to anyone who listens
     ui_dev = evdev.create_uinput_device()
+
+    # Log filtering mode
+    if _FILTERED_KEYS_CODES is None:
+        logging.info("Filtering mode: ALL keys (original behavior)")
+    else:
+        logging.info(f"Filtering mode: SPECIFIC keys only ({len(_FILTERED_KEYS_CODES)} keys configured)")
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            key_names = [name for name in FILTERED_KEYS]
+            logging.debug(f"Filtered keys: {', '.join(sorted(key_names))}")
 
     logging.info("Listening to input events...")
 
@@ -28,6 +63,10 @@ def _from_keystroke(event: libevdev.InputEvent, threshold: int) -> bool:
     # some events we don't want to filter, like EV_LED for toggling NumLock and the like, and also key hold events
     if not event.matches(libevdev.EV_KEY) or event.value > 1:
         logging.debug(f'FORWARDING {event.code}')
+        return True
+
+    if _FILTERED_KEYS_CODES is not None and event.code not in _FILTERED_KEYS_CODES:
+        logging.debug(f'FORWARDING {event.code} (not in filtered keys list)')
         return True
 
     # the values are 0 for up, 1 for down and 2 for hold

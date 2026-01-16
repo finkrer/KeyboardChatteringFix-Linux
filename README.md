@@ -43,7 +43,7 @@ By filtering such anomalies, we can hopefully remove chatter without impeding ac
 
 ## Installation
 
-Download the repository as a zip and extract the file. The dependencies are listed in the requirements.txt. And you can install it with the command below. 
+Download the repository as a zip and extract the file. The dependencies are listed in the requirements.txt. And you can install it with the command below.
 
 ```shell
 sudo pip3 install -r requirements.txt
@@ -56,6 +56,49 @@ sudo pip3 install -r requirements.txt
 ```shell
 sudo python3 -m src
 ```
+
+### Key Filtering Configuration
+
+The filter has two operating modes:
+
+#### Mode 1: Filter ALL keys (original default behavior)
+By default, the filter works as it always has - applying the anti-chattering filter to all keyboard keys. This is the behavior when `FILTERED_KEYS` is set to `None` or empty in `src/constants.py`.
+
+#### Mode 2: Filter only specific keys
+You can configure the filter to apply only to specific keys that exhibit chattering. To do this:
+
+1. Open `src/constants.py`
+2. Uncomment and modify the `FILTERED_KEYS` variable with the desired keys
+3. Use only the key name (e.g., `"KEY_A"`, `"KEY_SPACE"`) - no need for the `libevdev.EV_KEY.` prefix
+
+**Configuration examples:**
+
+```python
+# Filter only specific keys
+FILTERED_KEYS = {
+    "KEY_A",      # A key with chattering
+    "KEY_SPACE",  # Spacebar with chattering
+    "KEY_ENTER",  # Enter key with chattering
+}
+
+# Filter all letters and numbers
+FILTERED_KEYS = {
+    "KEY_A", "KEY_B", "KEY_C", "KEY_D", "KEY_E", "KEY_F", "KEY_G", "KEY_H",
+    "KEY_I", "KEY_J", "KEY_K", "KEY_L", "KEY_M", "KEY_N", "KEY_O", "KEY_P",
+    "KEY_Q", "KEY_R", "KEY_S", "KEY_T", "KEY_U", "KEY_V", "KEY_W", "KEY_X",
+    "KEY_Y", "KEY_Z", "KEY_0", "KEY_1", "KEY_2", "KEY_3", "KEY_4", "KEY_5",
+    "KEY_6", "KEY_7", "KEY_8", "KEY_9", "KEY_SPACE", "KEY_ENTER",
+}
+
+# Return to original behavior (filter all keys)
+FILTERED_KEYS = None
+```
+
+**Advantages of specific mode:**
+- ✅ Better performance (processes only problematic keys)
+- ✅ Preserves modifier keys (Ctrl, Alt, Shift)
+- ✅ Doesn't interfere with function or special keys
+- ✅ Flexible per-key configuration
 
 ### Customization Options
 
@@ -90,11 +133,11 @@ Then, copy the `chattering_fix.service` to `/etc/systemd/system/` and enable it 
 ```shell
 systemctl enable --now chattering_fix
 ```
-You can check if the systemd unit file is properly working using 
+You can check if the systemd unit file is properly working using
 ```shell
 systemctl status chattering_fix.service
 ```
-You can also use 
+You can also use
 ```shell
 journalctl -xeu chattering_fix.service
 ```
