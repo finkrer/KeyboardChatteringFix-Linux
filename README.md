@@ -43,7 +43,7 @@ By filtering such anomalies, we can hopefully remove chatter without impeding ac
 
 ## Installation
 
-Download the repository as a zip and extract the file. The dependencies are listed in the requirements.txt. And you can install it with the command below. 
+Download the repository as a zip and extract the file. The dependencies are listed in the requirements.txt. And you can install it with the command below.
 
 ```shell
 sudo pip3 install -r requirements.txt
@@ -71,6 +71,12 @@ sudo python3 -m src
 
 - -v {0,1,2}, --verbosity {0,1,2}
 
+- -c CONFIG_PATH, --config-path CONFIG_PATH
+  - Path to the configuration file specifying the threshold for each key (absolute or relative to the main project directory). The default path is `config.yaml` in the main project directory. If the file does not exist, the default threshold or the provided THRESHOLD will be used for all keys.
+
+- -n, --new-config
+  - Create a new configuration file at CONFIG_PATH with commented-out entries for all available keys for a given keyboard. To customize the threshold for a key, uncomment the line and set the threshold value in milliseconds.
+
 ## Automation
 
 Starting the script manually every time doesn't sound like the greatest idea, so
@@ -90,12 +96,17 @@ Then, copy the `chattering_fix.service` to `/etc/systemd/system/` and enable it 
 ```shell
 systemctl enable --now chattering_fix
 ```
-You can check if the systemd unit file is properly working using 
+You can check if the systemd unit file is properly working using
 ```shell
 systemctl status chattering_fix.service
 ```
-You can also use 
+You can also use
 ```shell
 journalctl -xeu chattering_fix.service
 ```
 just to make sure that there are no errors.
+
+To change individual keys thresholds while the service is running, edit the config file as you normally would and then restart the service with the command below.
+```shell
+systemctl restart chattering_fix.service
+```
