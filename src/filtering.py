@@ -21,6 +21,7 @@ def filter_chattering(evdev: libevdev.Device, threshold: int) -> NoReturn:
 
 
 def _from_keystroke(event: libevdev.InputEvent, threshold: int) -> bool:
+    global _last_key_code
     # no need to relay those - we are going to emit our own
     if event.matches(libevdev.EV_SYN) or event.matches(libevdev.EV_MSC):
         return False
@@ -44,9 +45,10 @@ def _from_keystroke(event: libevdev.InputEvent, threshold: int) -> bool:
     prev = _last_key_up.get(event.code)
     now = event.sec * 1E6 + event.usec
 
-    if prev is None or now - prev > threshold * 1E3:
+    if prev is None or now - prev > threshold * 1E3 or _last_key_code != event.code:
         logging.debug(f'FORWARDING {event.code} down')
         _key_pressed[event.code] = True
+        _last_key_code = event.code
         return True
 
     logging.info(
@@ -56,3 +58,4 @@ def _from_keystroke(event: libevdev.InputEvent, threshold: int) -> bool:
 
 _last_key_up: Dict[libevdev.EventCode, int] = {}
 _key_pressed: DefaultDict[libevdev.EventCode, bool] = defaultdict(bool)
+_last_key_code = None
