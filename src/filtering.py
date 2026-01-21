@@ -5,7 +5,7 @@ from typing import DefaultDict, Dict, NoReturn
 import libevdev
 
 
-def filter_chattering(evdev: libevdev.Device, threshold: int) -> NoReturn:
+def filter_chattering(evdev: libevdev.Device, threshold: int, keys:libevdev.EventCode) -> NoReturn:
     # grab the device - now only we see the events it emits
     evdev.grab()
     # create a copy of the device that we can write to - this will emit the filtered events to anyone who listens
@@ -16,11 +16,11 @@ def filter_chattering(evdev: libevdev.Device, threshold: int) -> NoReturn:
     while True:
         # since the descriptor is blocking, this blocks until there are events available
         for e in evdev.events():
-            if _from_keystroke(e, threshold):
+            if _from_keystroke(e, threshold, keys):
                 ui_dev.send_events([e, libevdev.InputEvent(libevdev.EV_SYN.SYN_REPORT, 0)])
 
 
-def _from_keystroke(event: libevdev.InputEvent, threshold: int) -> bool:
+def _from_keystroke(event: libevdev.InputEvent, threshold: int, keys:libevdev.EventCode) -> bool:
     # no need to relay those - we are going to emit our own
     if event.matches(libevdev.EV_SYN) or event.matches(libevdev.EV_MSC):
         return False
@@ -28,6 +28,10 @@ def _from_keystroke(event: libevdev.InputEvent, threshold: int) -> bool:
     # some events we don't want to filter, like EV_LED for toggling NumLock and the like, and also key hold events
     if not event.matches(libevdev.EV_KEY) or event.value > 1:
         logging.debug(f'FORWARDING {event.code}')
+
+    # If the event is not in the list of keys to filter, return True
+    if event.code not in keys:
+        logging.debug(f'Skipping {event.code} since it is not requested by user')
         return True
 
     # the values are 0 for up, 1 for down and 2 for hold

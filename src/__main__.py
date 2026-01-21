@@ -20,7 +20,10 @@ def get_device_handle(keyboard_name: str) -> libevdev.Device:
     finally:
         fd.close()
 
-
+def parse_keys(keys_str):
+    """Parse a comma-separated list of keys into a list of integers."""
+    return [key.strip() for key in keys_str.split(',')]
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-k', '--keyboard', type=str, default=str(),
@@ -28,6 +31,7 @@ if __name__ == "__main__":
                              f"If left unset, will be attempted to be retrieved automatically.")
     parser.add_argument('-t', '--threshold', type=int, default=30, help="Filter time threshold in milliseconds. "
                                                                         "Default=30ms.")
+    parser.add_argument('--keys', type=parse_keys, default=[], help="Comma-separated list of keys to filter. Default All. e.g KEY_A,KEY_B")
     parser.add_argument('-v', '--verbosity', type=int, default=1, choices=[0, 1, 2])
     args = parser.parse_args()
 
@@ -46,5 +50,8 @@ if __name__ == "__main__":
         datefmt="%H:%M:%S"
     )
 
+    # Convert them to libevdev.EventCode
+    keys = [libevdev.evbit(key) for key in args.keys]
+
     with get_device_handle(args.keyboard or retrieve_keyboard_name()) as device:
-        filter_chattering(device, args.threshold)
+        filter_chattering(device, args.threshold, keys)
