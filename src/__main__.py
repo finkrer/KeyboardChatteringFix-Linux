@@ -13,6 +13,11 @@ from src.keyboard_retrieval import retrieve_keyboard_name, INPUT_DEVICES_PATH, a
 def get_device_handle(keyboard_name: str) -> libevdev.Device:
     """ Safely get an evdev device handle. """
 
+    # check if the device exists by checking if the device path exists
+    if not os.path.exists(abs_keyboard_path(keyboard_name)):
+        logging.critical(f"Keyboard device {keyboard_name} not connected.")
+        sys.exit(0)
+
     fd = open(abs_keyboard_path(keyboard_name), 'rb')
     evdev = libevdev.Device(fd)
     try:
