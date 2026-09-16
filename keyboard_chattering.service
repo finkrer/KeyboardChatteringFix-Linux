@@ -1,0 +1,19 @@
+[Unit]
+Description=Keyboard Chattering Fix service
+# Ensures that if systemd restarts this during wake-up, the system is fully awake first.
+After=sleep.target
+
+[Service]
+# Wait 3 seconds before starting the script to give the USB bus and Wayland/X11 time to fully wake up
+ExecStartPre=/bin/sleep 3
+
+# Change ExecStart to the absolute path of your shell script
+ExecStart=/absolute/path/to/keyboard_chattering.sh
+
+# Systemd will automatically restart the script if it crashes, or if it exits due to a USB sleep/disconnect
+Restart=always
+RestartSec=5
+
+[Install]
+# Start at normal boot. Systemd handles the restarts on wake automatically.
+WantedBy=multi-user.target
